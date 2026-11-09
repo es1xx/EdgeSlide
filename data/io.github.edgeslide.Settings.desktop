@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=EdgeSlide
+Comment=Configure touchpad edge volume and brightness gestures
+Exec=edgeslide-settings
+Icon=io.github.edgeslide.Settings
+Terminal=false
+Categories=Settings;HardwareSettings;
+Keywords=touchpad;gestures;volume;brightness;
+StartupNotify=true

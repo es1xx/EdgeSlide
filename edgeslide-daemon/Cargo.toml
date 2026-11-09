@@ -1,0 +1,16 @@
+[package]
+name = "edgeslide-daemon"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[dependencies]
+edgeslide-core = { path = "../edgeslide-core" }
+anyhow.workspace = true
+gio.workspace = true
+glib.workspace = true
+evdev = "0.13"
+udev = "0.9"
+libc = "0.2"
+libpulse-binding = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }

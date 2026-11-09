@@ -1,0 +1,24 @@
+enabled = true
+touchpad = ""
+volume_min = 0.0
+volume_max = 1.0
+volume_speed = 1.0
+brightness_min = 0.10
+brightness_speed = 1.0
+indicator = false
+indicator_position = "bottom"
+indicator_accent = "blue"
+[left]
+enabled = true
+action = "volume"
+width = 0.07
+threshold = 0.04
+sensitivity = 1.0
+invert = false
+[right]
+enabled = true
+action = "brightness"
+width = 0.07
+threshold = 0.04
+sensitivity = 1.0
+invert = false
