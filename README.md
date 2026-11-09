@@ -12,6 +12,14 @@
   <a href="docs/PERMISSIONS.md">Device access</a>
 </p>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Rust-2021-DEA584?style=flat-square&logo=rust&logoColor=white" alt="Rust 2021">
+  <img src="https://img.shields.io/badge/platform-Linux-FCC624?style=flat-square&logo=linux&logoColor=111" alt="Linux">
+  <img src="https://img.shields.io/badge/compositor-Hyprland-58E1FF?style=flat-square" alt="Hyprland">
+  <img src="https://img.shields.io/badge/interface-GTK4%20%2B%20libadwaita-4A86CF?style=flat-square" alt="GTK4 and libadwaita">
+  <img src="https://img.shields.io/badge/license-MIT-86E1A7?style=flat-square" alt="MIT License">
+</p>
+
 EdgeSlide makes the edges of a laptop touchpad useful without taking control of
 the touchpad away from Hyprland. It runs as a small user service; the GTK
 settings window and visual indicator are short-lived processes.
@@ -25,6 +33,20 @@ settings window and visual indicator are short-lived processes.
 | Three fingers, up | Optional overview command |
 
 Every gesture is configurable or can be disabled from the settings app.
+
+## See it in action
+
+<p align="center">
+  <img src="assets/settings-preview.png" alt="EdgeSlide settings window on Hyprland" width="920">
+</p>
+
+<p align="center"><em>One compact settings window for edge controls, native gestures, feedback and diagnostics.</em></p>
+
+<p align="center">
+  <img src="assets/indicator-preview.png" alt="EdgeSlide brightness indicator" width="300">
+</p>
+
+<p align="center"><em>Optional click-through feedback disappears automatically when the gesture ends.</em></p>
 
 ## Architecture
 
