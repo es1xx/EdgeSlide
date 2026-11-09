@@ -49,12 +49,9 @@ fn source_line(path: &Path) -> String {
     format!("do local p={}; local f=io.open(p,'r'); if f then f:close(); dofile(p) end end -- EdgeSlide native gestures\n",lua_string(&path.to_string_lossy()))
 }
 fn apply(clear: bool) -> Result<()> {
-    let loader = generate(clear)?;
+    generate(clear)?;
     let output = Command::new("hyprctl")
-        .args([
-            "eval",
-            &format!("dofile({})", lua_string(&loader.to_string_lossy())),
-        ])
+        .arg("reload")
         .output()
         .context("Cannot run hyprctl")?;
     let response = format!(
@@ -65,7 +62,7 @@ fn apply(clear: bool) -> Result<()> {
     if !output.status.success() || response.trim() != "ok" {
         bail!("Native gesture application reported an error. Existing foreign gestures are not removed.\n{response}");
     }
-    println!("Native gestures applied. No daemon restart or compositor reload requested.");
+    println!("Native gestures applied through a Hyprland configuration reload. The EdgeSlide daemon was not restarted.");
     Ok(())
 }
 fn main() -> Result<()> {

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 if [[ $EUID == 0 ]]; then echo 'Run as your desktop user.' >&2; exit 1; fi
+if [[ -x "$HOME/.local/bin/edgeslide-gestures" ]]; then "$HOME/.local/bin/edgeslide-gestures" clear || true; fi
+rm -f -- "$HOME/.local/bin/edgeslide-gestures"
 systemctl --user disable --now edgeslide.service || true
 rm -f -- "$HOME/.local/bin/edgeslide-daemon" "$HOME/.local/bin/edgeslide-settings" "$HOME/.local/bin/edgeslide-indicator" \
  "$HOME/.config/systemd/user/edgeslide.service" \

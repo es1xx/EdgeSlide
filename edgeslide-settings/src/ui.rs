@@ -42,6 +42,7 @@ fn new_window(app: &adw::Application) -> gtk::Label {
     edge_group(&gestures, &model, false);
     edge_group(&gestures, &model, true);
     action_group(&gestures, &model);
+    crate::multifinger_ui::add(&gestures);
     advanced_page(&advanced, &model, &window, &feedback);
     stack.add_titled_with_icon(
         &general,

@@ -7,6 +7,7 @@ if [[ ! -x "$cargo_bin" ]]; then cargo_bin=cargo; fi
 "$cargo_bin" build --release --locked --workspace
 install -Dm755 target/release/edgeslide-daemon "$HOME/.local/bin/edgeslide-daemon"
 install -Dm755 target/release/edgeslide-indicator "$HOME/.local/bin/edgeslide-indicator"
+install -Dm755 target/release/edgeslide-gestures "$HOME/.local/bin/edgeslide-gestures"
 install -Dm755 target/release/edgeslide-settings "$HOME/.local/bin/edgeslide-settings"
 install -Dm644 data/edgeslide.service "$HOME/.config/systemd/user/edgeslide.service"
 install -Dm644 data/io.github.edgeslide.Settings.svg "$HOME/.local/share/icons/hicolor/scalable/apps/io.github.edgeslide.Settings.svg"

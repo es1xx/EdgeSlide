@@ -1,3 +1,4 @@
+mod multifinger_ui;
 mod ui;
 use adw::prelude::*;
 fn main() -> glib::ExitCode {

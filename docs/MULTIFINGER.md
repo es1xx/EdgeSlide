@@ -62,6 +62,8 @@ Repeated apply replaces only EdgeSlide's exact registered tuples, including its
 reserved scale marker `1.000739`; it does not clear native gesture tables or
 rewrite bindings. Lua state and native registrations reset together on compositor
 reload, so the source line restores the mappings without accumulating callbacks.
+Saving the new settings reloads Hyprland to apply the generated mappings; it does
+not restart EdgeSlide's daemon.
 
 Hyprland rejects a new mapping shadowed by an existing matching direction, axis,
 or all-swipe gesture. The apply command reports that error; it never forcibly
