@@ -1,10 +1,30 @@
-# EdgeSlide
+<div align="center">
+  <img src="data/io.github.edgeslide.Settings.svg" width="128" alt="EdgeSlide icon">
+  <h1>EdgeSlide</h1>
+  <p><strong>Touchpad edge controls and native gestures for Hyprland.</strong></p>
+  <p>Rust · GTK4/libadwaita · PipeWire · systemd user service</p>
+</div>
 
-A small Rust touchpad edge gesture controller for Linux, with GTK4/libadwaita
-settings. Slide upward along the left edge for volume and the right edge for
-brightness. Actions, edge widths, thresholds, speeds, limits, and directions are
-configurable independently. MIT licensed; the root license covers project code
-and artwork, while dependencies retain their own licenses.
+<p align="center">
+  <a href="LICENSE">MIT License</a> ·
+  <a href="#install-on-arch-linux">Install</a> ·
+  <a href="#gestures">Gestures</a> ·
+  <a href="docs/PERMISSIONS.md">Device access</a>
+</p>
+
+EdgeSlide makes the edges of a laptop touchpad useful without taking control of
+the touchpad away from Hyprland. It runs as a small user service; the GTK
+settings window and visual indicator are short-lived processes.
+
+| Gesture | Default action |
+| --- | --- |
+| One finger, left edge, up/down | Volume up/down |
+| One finger, right edge, up/down | Brightness up/down |
+| Four fingers, left/right | Previous/next workspace |
+| Three fingers, down | Area screenshot |
+| Three fingers, up | Optional overview command |
+
+Every gesture is configurable or can be disabled from the settings app.
 
 ## Architecture
 
@@ -24,41 +44,43 @@ and its current level are re-read for each adjustment to respect external change
 Configuration is loaded at startup; Save and apply restarts an already-running
 service. Disabled gestures do not open input devices.
 
-## Build and install (Arch Linux)
-
-Dependencies: Rust with cargo/rustfmt/clippy, `base-devel`, `pkgconf`, `gtk4`,
-`libadwaita`, `libpulse`, `systemd`, `pipewire-pulse`, `wireplumber`, `python`,
-and `acl` if installing the optional permission rule. Existing desktop packages
-must be inspected before installing anything. GTK >= 4.12 and libadwaita >= 1.4.
+## Install on Arch Linux
 
 ```sh
-cargo fmt --all -- --check
-cargo clippy --workspace --all-targets -- -D warnings
-cargo test --workspace
-./scripts/install.sh
-~/.local/bin/edgeslide-settings
+git clone https://github.com/es1xx/EdgeSlide.git
+cd EdgeSlide
+./scripts/install-arch.sh
 ```
 
-The installer builds with `Cargo.lock`, installs under `~/.local`, preserves
-existing `~/.config/edgeslide/config.toml`, and does not change autostart.
-No privileged operation is performed by it. With a custom XDG_CONFIG_HOME,
-set the same environment in the user service; otherwise use the default path.
+The convenience installer checks for the required packages, installs only missing
+ones with `pacman`, then builds the locked Rust workspace and installs EdgeSlide
+under `~/.local`. It preserves existing configuration and does not enable
+autostart on its own. It must be run as your desktop user, not root.
+
+If the build dependencies are already present, use `./scripts/install.sh`.
+
+Touchpad read access is intentionally separate. Read [device access](docs/PERMISSIONS.md)
+before explicitly granting it; EdgeSlide never silently broadens input permissions.
 
 ```sh
 systemctl --user start edgeslide.service
 systemctl --user enable edgeslide.service       # start on future logins
 systemctl --user disable --now edgeslide.service
-journalctl --user -u edgeslide.service -n 30
-~/.local/bin/edgeslide-daemon --list-devices
-~/.local/bin/edgeslide-daemon --check-config
-~/.local/bin/edgeslide-daemon --probe-backends    # explicit same-value write test
+~/.local/bin/edgeslide-settings
 ```
 
-Read [device access](docs/PERMISSIONS.md) before granting permissions. A service
-can be active while waiting for access; the journal explains that state. No
-physical gesture will work until the selected touchpad is readable.
+## Gestures
 
-## Gesture behavior and limitations
+Open **EdgeSlide → Gestures** to configure the one-finger edge controls and the
+separate native multi-finger section. Multi-finger actions use Hyprland's Lua
+gesture API, so they add no second daemon, input reader or idle timer.
+
+Three-finger up is disabled until you enter a command for an overview tool you
+have already installed. EdgeSlide does not assume or install an overview provider.
+See [multi-finger setup](docs/MULTIFINGER.md) for Hyprland integration, conflict
+handling and custom actions.
+
+## Safety and behavior
 
 A finger must start inside an edge. Movement beyond the activation threshold is
 consumed to avoid a sudden jump. Subsequent vertical movement is proportional
@@ -112,11 +134,3 @@ The project can be published from its local Git repository when the maintainer i
 - [Linux multitouch protocol](https://www.kernel.org/doc/html/latest/input/multi-touch-protocol.html)
 - [logind session and brightness APIs](https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.login1.html)
 - [Wayland layer-shell protocol](https://github.com/swaywm/wlr-protocols/blob/master/unstable/wlr-layer-shell-unstable-v1.xml)
-
-## Optional multi-finger gestures
-
-The existing Gestures tab also offers an independent native Hyprland section for
-four-finger workspace navigation, three-finger area screenshots, and configurable
-custom/overview commands. It uses a separate configuration file and leaves the
-original edge daemon unchanged. See [native multi-finger integration](docs/MULTIFINGER.md)
-for setup, conflict handling, independent enable/disable controls, and tests.
