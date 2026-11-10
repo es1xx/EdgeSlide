@@ -1,158 +1,135 @@
 <div align="center">
-  <img src="data/io.github.edgeslide.Settings.svg" width="128" alt="EdgeSlide icon">
-  <h1>EdgeSlide</h1>
-  <p><strong>Touchpad edge controls and native gestures for Hyprland.</strong></p>
-  <p>Rust · GTK4/libadwaita · PipeWire · systemd user service</p>
+
+# E D G E S L I D E
+
+### Small gestures. Everyday control.
+
+Volume, brightness and workspace gestures for Hyprland.<br>
+Keep your hands on the touchpad.
+
+![Rust 2021](https://img.shields.io/badge/Rust-2021-67e8f9)
+![Platform: Linux](https://img.shields.io/badge/platform-Linux-a3ff79)
+![Desktop: Hyprland](https://img.shields.io/badge/desktop-Hyprland-c4a1ff)
+![Interface: GTK4](https://img.shields.io/badge/interface-GTK4%20%2B%20libadwaita-89b4fa)
+[![License: MIT](https://img.shields.io/badge/license-MIT-ffd580)](LICENSE)
+
+[Get started](#get-started) · [Gestures](#gestures) · [Full guide](docs/GUIDE.md) · [Device access](docs/PERMISSIONS.md) · [Verification](docs/VERIFICATION.md)
+
+<img src="assets/settings-preview.png" width="660" alt="EdgeSlide settings in a compact dark libadwaita window: touchpad selection, service controls and optional feedback">
+
+*Actual application capture · clean libadwaita theme · no settings applied*
+
 </div>
 
-<p align="center">
-  <a href="LICENSE">MIT License</a> ·
-  <a href="#install-on-arch-linux">Install</a> ·
-  <a href="#gestures">Gestures</a> ·
-  <a href="docs/PERMISSIONS.md">Device access</a>
-</p>
+## The edges do a little more.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Rust-2021-DEA584?style=flat-square&logo=rust&logoColor=white" alt="Rust 2021">
-  <img src="https://img.shields.io/badge/platform-Linux-FCC624?style=flat-square&logo=linux&logoColor=111" alt="Linux">
-  <img src="https://img.shields.io/badge/compositor-Hyprland-58E1FF?style=flat-square" alt="Hyprland">
-  <img src="https://img.shields.io/badge/interface-GTK4%20%2B%20libadwaita-4A86CF?style=flat-square" alt="GTK4 and libadwaita">
-  <img src="https://img.shields.io/badge/license-MIT-86E1A7?style=flat-square" alt="MIT License">
-</p>
+Slide along a touchpad edge to adjust volume or screen brightness. Add native
+multi-finger gestures for workspaces and screenshots, then tune everything in a
+compact settings window.
 
-EdgeSlide makes the edges of a laptop touchpad useful without taking control of
-the touchpad away from Hyprland. It runs as a small user service; the GTK
-settings window and visual indicator are short-lived processes.
+- **Volume and brightness, at your fingertips.** Each edge can be assigned,
+  inverted, adjusted or disabled independently.
+- **Native multi-finger gestures.** Configure workspace navigation, area
+  screenshots and your own commands through Hyprland's Lua gesture API.
+- **Settings that get out of the way.** Closing the GTK window exits the GUI;
+  enabled edge controls continue in the user service.
+- **Feedback when you want it.** An optional click-through indicator shows your
+  adjustment, then disappears. Choose its position and accent.
+- **Your input stays with Hyprland.** The edge service observes touchpad events
+  without grabbing the device. Pointer movement, clicks and scrolling remain
+  under compositor control.
+- **Start on your terms.** Installation preserves existing configuration and
+  leaves autostart off until you enable it.
 
-| Gesture | Default action |
-| --- | --- |
-| One finger, left edge, up/down | Volume up/down |
-| One finger, right edge, up/down | Brightness up/down |
-| Four fingers, left/right | Previous/next workspace |
-| Three fingers, down | Area screenshot |
-| Three fingers, up | Optional overview command |
+EdgeSlide runs as your desktop user. Touchpad access is a separate, explicit
+setup step; see [device permissions](docs/PERMISSIONS.md).
+Hardware-specific cancellation and typing/palm limitations are documented in the
+[behavior guide](docs/GUIDE.md#edge-behavior).
 
-Every gesture is configurable or can be disabled from the settings app.
+## Get started
 
-## See it in action
+**Arch Linux and a Hyprland Wayland session.** Clone the project and run the
+installer as your regular desktop user:
 
-<p align="center">
-  <img src="assets/settings-preview.png" alt="EdgeSlide settings window on Hyprland" width="920">
-</p>
-
-<p align="center"><em>One compact settings window for edge controls, native gestures, feedback and diagnostics.</em></p>
-
-<p align="center">
-  <img src="assets/indicator-preview.png" alt="EdgeSlide brightness indicator" width="300">
-</p>
-
-<p align="center"><em>Optional click-through feedback disappears automatically when the gesture ends.</em></p>
-
-## Architecture
-
-- `edgeslide-core`: validated TOML configuration, evdev frame decoding, gesture state machine.
-- `edgeslide-daemon`: nonexclusive read-only evdev observer, udev hotplug monitor,
-  blocking poll, native libpulse control through PipeWire-Pulse, logind brightness.
-- `edgeslide-settings`: GTK4/libadwaita settings, service controls, diagnostics,
-  import/export, defaults. Closing the window releases the entire GUI process.
-  Its `edgeslide-indicator` helper draws an optional click-through Wayland overlay
-  and exits after 900 ms without updates; no persistent GTK process is used.
-
-There is no input grab, injected input, compositor reconfiguration, root daemon,
-idle polling timer, or per-adjustment shell command. A sleeping action worker
-coalesces changes while gestures are active. Native audio requests have bounded
-timeouts. Device ranges and the backlight maximum are cached. Default audio sink
-and its current level are re-read for each adjustment to respect external changes.
-Configuration is loaded at startup; Save and apply restarts an already-running
-service. Disabled gestures do not open input devices.
-
-## Install on Arch Linux
-
-```sh
+```bash
 git clone https://github.com/es1xx/EdgeSlide.git
 cd EdgeSlide
 ./scripts/install-arch.sh
 ```
 
-The convenience installer checks for the required packages, installs only missing
-ones with `pacman`, then builds the locked Rust workspace and installs EdgeSlide
-under `~/.local`. It preserves existing configuration and does not enable
-autostart on its own. It must be run as your desktop user, not root.
+The installer checks for missing build dependencies, requests `pacman` only when
+needed, builds the locked Rust workspace, and installs under `~/.local`.
+If dependencies are already installed, use `./scripts/install.sh`.
+It preserves your configuration and does not enable autostart.
 
-If the build dependencies are already present, use `./scripts/install.sh`.
+Follow the [device-access guide](docs/PERMISSIONS.md), then open **EdgeSlide**
+from your application launcher or run:
 
-Touchpad read access is intentionally separate. Read [device access](docs/PERMISSIONS.md)
-before explicitly granting it; EdgeSlide never silently broadens input permissions.
-
-```sh
-systemctl --user start edgeslide.service
-systemctl --user enable edgeslide.service       # start on future logins
-systemctl --user disable --now edgeslide.service
+```bash
 ~/.local/bin/edgeslide-settings
 ```
 
-## Gestures
+Start edge controls from the settings window, or:
 
-Open **EdgeSlide → Gestures** to configure the one-finger edge controls and the
-separate native multi-finger section. Multi-finger actions use Hyprland's Lua
-gesture API, so they add no second daemon, input reader or idle timer.
-
-Three-finger up is disabled until you enter a command for an overview tool you
-have already installed. EdgeSlide does not assume or install an overview provider.
-See [multi-finger setup](docs/MULTIFINGER.md) for Hyprland integration, conflict
-handling and custom actions.
-
-## Safety and behavior
-
-A finger must start inside an edge. Movement beyond the activation threshold is
-consumed to avoid a sudden jump. Subsequent vertical movement is proportional
-to touchpad height. Multiple fingers, physical clicks, reported palms, sideways
-exit, stale events, and interrupted contacts cancel until release. A held contact
-with no reports for 750 ms is cancelled. After an input overflow or startup with a finger already down, lift
-all fingers once before retrying. Type-B hardware must expose ABS_X/Y and
-BTN_TOUCH/BTN_TOOL_FINGER compatibility state; unsupported devices are rejected.
-Palm recognition is conservative and depends on hardware tool reporting; this
-observer cannot reproduce all libinput palm/typing heuristics.
-
-Normal pointer movement, taps, clicks, scrolling and Hyprland gestures remain
-under compositor control. An edge gesture can still move the pointer or produce
-a tap. Keyboard-driven disable-while-typing is not mirrored because EdgeSlide
-does not read keyboard devices. Tune narrow edges and sufficient thresholds.
-
-Brightness defaults to a 10% minimum, with a hard configurable lower bound of 5%.
-Validate readability on your panel before reducing it. Audio preserves channel
-balance and mute state; it does not unmute automatically. The first alphabetic
-backlight device is selected if multiple backlights exist.
-
-Optional feedback uses the Wayland layer-shell protocol supported by Hyprland.
-Choose top, bottom, left, or right placement and blue, amber, or green accents.
-The overlay never accepts keyboard/pointer input or reserves screen space. It
-uses double-buffered shared memory and redraws only on value updates. Its one-shot
-inactivity timeout closes it after 900 ms. Unsupported compositors cannot display
-this optional overlay. The user systemd environment must contain WAYLAND_DISPLAY
-and XDG_RUNTIME_DIR for it to launch; these were already present on the inspected
-Hyprland session. Preview saved appearance in General settings before enabling it.
-
-## Verification and removal
-
-Repeat the endpoint-only idle measurement with `./scripts/measure-idle.py --seconds 30`.
-Keep the touchpad untouched during the interval; run it after normal gestures to
-include initialized backends.
-
-See [verification](docs/VERIFICATION.md) for actual results and the manual
-hardware checklist. Do not treat unit tests as proof of physical gesture behavior.
-
-```sh
-./scripts/uninstall.sh
+```bash
+systemctl --user start edgeslide.service
+systemctl --user enable edgeslide.service  # Optional: start on future logins
 ```
 
-This preserves user configuration and the source checkout. Revoke the optional
-root-installed touchpad rule separately as described in PERMISSIONS.md.
-The project can be published from its local Git repository when the maintainer is ready.
+Other distributions can use the source installer after providing equivalent
+dependencies; the convenience dependency installer targets Arch Linux.
+See the [setup guide](docs/GUIDE.md#installation-and-lifecycle).
 
-## Protocol references
+## Gestures
 
-- [Linux input event and SYN_DROPPED semantics](https://www.kernel.org/doc/html/latest/input/event-codes.html)
-- [Linux multitouch protocol](https://www.kernel.org/doc/html/latest/input/multi-touch-protocol.html)
-- [logind session and brightness APIs](https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.login1.html)
-- [Wayland layer-shell protocol](https://github.com/swaywm/wlr-protocols/blob/master/unstable/wlr-layer-shell-unstable-v1.xml)
+| Gesture | Default action |
+| :-- | :-- |
+| One finger along the left edge | Volume up / down |
+| One finger along the right edge | Brightness up / down |
+| Four fingers left / right | Previous / next workspace |
+| Three fingers down | Select an area for a screenshot |
+| Three fingers up | Your overview command, once configured |
+
+Edge actions and native gestures have separate enable controls.
+Multi-finger gestures require opting into the
+[Hyprland Lua integration](docs/MULTIFINGER.md), tested with Hyprland 0.57.
+They do not become active merely by starting the edge service.
+
+Three-finger up stays disabled until you choose an installed overview provider.
+EdgeSlide does not install or assume one. Custom commands, sensitivity and
+per-gesture switches are available in **Gestures**.
+
+## A little feedback
+
+<p align="center">
+<img src="assets/indicator-preview.png" width="300" alt="Optional EdgeSlide brightness indicator showing 66 percent">
+</p>
+
+The optional overlay accepts no keyboard or pointer input and reserves no screen
+space. It closes after roughly 900 ms without updates. Preview it in **General**
+before enabling it; preview does not change volume or brightness.
+
+## Development
+
+```bash
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace
+lua tests/multifinger.lua
+```
+
+The verification reports cover automated checks and the touchpad behavior
+actually tested on hardware. Idle measurements are observations from one system,
+not battery-life guarantees.
+
+See [edge-control verification](docs/VERIFICATION.md) and
+[multi-finger verification](docs/MULTIFINGER-VERIFICATION.md).
+The [technical guide](docs/GUIDE.md) explains the daemon, cancellation behavior,
+backend requirements and removal.
+
+## License
+
+[MIT](LICENSE) · Copyright © 2026 EdgeSlide contributors.
+
+The root MIT license covers the original application and documentation.
+Dependencies and referenced protocols retain their respective licenses.
